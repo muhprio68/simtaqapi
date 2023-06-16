@@ -31,32 +31,12 @@ class Database extends Config
      * @var array
      */
     //coba
-    public $default = [
-        'DSN'      => '',
-        'hostname' => 'localhost',
-        'username' => 'root',
-        'password' => '',
-        'database' => 'restful_db',
-        'DBDriver' => 'MySQLi',
-        'DBPrefix' => '',
-        'pConnect' => false,
-        'DBDebug'  => (ENVIRONMENT !== 'production'),
-        'charset'  => 'utf8',
-        'DBCollat' => 'utf8_general_ci',
-        'swapPre'  => '',
-        'encrypt'  => false,
-        'compress' => false,
-        'strictOn' => false,
-        'failover' => [],
-        'port'     => 3306,
-    ];
-
     // public $default = [
     //     'DSN'      => '',
     //     'hostname' => 'localhost',
-    //     'username' => 'simtaqmy_muhprio',
-    //     'password' => 'prio681997',
-    //     'database' => 'simtaqmy_restapi',
+    //     'username' => 'root',
+    //     'password' => '',
+    //     'database' => 'restful_db',
     //     'DBDriver' => 'MySQLi',
     //     'DBPrefix' => '',
     //     'pConnect' => false,
@@ -70,6 +50,26 @@ class Database extends Config
     //     'failover' => [],
     //     'port'     => 3306,
     // ];
+
+    public $default = [
+        'DSN'      => '',
+        'hostname' => 'localhost',
+        'username' => 'simtaqmy_muhprio',
+        'password' => 'prio681997',
+        'database' => 'simtaqmy_restapi',
+        'DBDriver' => 'MySQLi',
+        'DBPrefix' => '',
+        'pConnect' => false,
+        'DBDebug'  => (ENVIRONMENT !== 'production'),
+        'charset'  => 'utf8',
+        'DBCollat' => 'utf8_general_ci',
+        'swapPre'  => '',
+        'encrypt'  => false,
+        'compress' => false,
+        'strictOn' => false,
+        'failover' => [],
+        'port'     => 3306,
+    ];
 
     /**
      * This database connection is used when
