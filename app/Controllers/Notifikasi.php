@@ -87,10 +87,7 @@ class Notifikasi extends ResourceController
             $modelkeu->getNomorKeuangan();
             $decoded = JWT::decode($token, new Key ($key, 'HS256'));
             $idusr = $decoded->uid;
-        } catch(\Exception $e){
-            return $this->fail('Invalid token 1'.$idusr);
-        }
-            try {
+        
                 $data = [
                     'no_keuangan' => $no_keuangan,
                     'id_user' => $idusr,
@@ -121,8 +118,9 @@ class Notifikasi extends ResourceController
         $key = getenv('TOKEN_SECRET');
         $model = new InfakModel();
         $ada = $model->getWhere(['no_keuangan' => $no_keuangan])->getResult();
-        $data = json_decode($ada[0], true);
-        $id = ['id_infak'];
+        $json1 = json_decode($ada, true);
+        $json2 = json_decode($json1, true);
+        $id = $json2['id_infak'];
         $decoded = JWT::decode($token, new Key ($key, 'HS256'));
         $id_usr = $decoded->uid;
         if ($ada){            
