@@ -27,14 +27,18 @@ class Notifikasi extends ResourceController
         try {
             $json_result = file_get_contents('php://input');
             $result = json_decode($json_result, true);
-    
-            // $e  = $result['status_code'];
-            // $a  = $result['order_id'];
-            // $b  = $result['gross_amount'];
             $status_code = $result['status_code'];
+            $no_keuangan  = $result['order_id'];
+            $nominal_infak  = $result['gross_amount'];
+            $ket_infak  = $result['custom_field1'];
+            $des_infak  = $result['custom_field2'];
+            $token = $result['custom_field3'];
+            
     
-            if ($status_code == 200){
-                return $this->createKeuangan($result['order_id'], round($result['gross_amount']));
+            if ($status_code == 201){
+                return $this->createInfak($token, $no_keuangan, $ket_infak, $nominal_infak, $des_infak, "Tunda");
+            } else if ($status_code == 200){
+                return $this->updateInfak($token, $no_keuangan, $ket_infak, $nominal_infak, $des_infak, "Selesai");
             }
         } catch(\Exception $e){
             return $this->fail('Tidak dapat memasukkan data keuangan');
@@ -74,56 +78,91 @@ class Notifikasi extends ResourceController
         return $this->respond($response);
     }
 
-    public function updateInfak($order_id){
-        $model = new InfakModel();
-                $json = $this->request->getJSON();
-                $ada = $model->getWhere(['no_keuangan' => $order_id])->getResult();
-                $data = json_decode($ada, true);
-                $id = $data['id_infak'];
-                if ($ada){
-                    
-                        $data = [
-                            'tipe_keuangan' => $json->tipe_keuangan,
-                            'tipe_keuangan' => $json->tipe_keuangan,
-                            'keterangan_keuangan' => $json->keterangan_keuangan,
-                            'status_keuangan' => $json->status_keuangan,
-                            'nominal_keuangan' => $json->nominal_keuangan,
-                            'deskripsi_keuangan' => $json->deskripsi_keuangan
-                        ];
-                    
-                    // Insert to Database
-                    $model->update($id, $data);
-                    $this->updateSaldo($data['tipe_keuangan'], $data['nominal_keuangan']);
-                    $response = [
-                        'status'   => 200,
-                        'error'    => null,
-                        'messages' => [
-                        'success' => 'Data Updated'
-                        ]
-                    ];
-                    return $this->respond($response);
-                } else {
-                    return $this->failNotFound('No Data Found with id '.$id);
-                }
+    public function createInfak($token, $no_keuangan, $ket_infak, $nominal_infak,  $des_infak, $status_infak)
+    {
+        try {
+            $key = getenv('TOKEN_SECRET');
+            $model = new InfakModel();
+            $modelkeu = new KeuanganModel();
+            $modelkeu->getNomorKeuangan();
+            $decoded = JWT::decode($token, new Key ($key, 'HS256'));
+            $idusr = $decoded->id;
+                $data = [
+                    'no_keuangan' => $no_keuangan,
+                    'id_user' => $idusr,
+                    'keterangan_infak' => $ket_infak,
+                    'nominal_infak' => $nominal_infak,
+                    'deskripsi_infak' => $des_infak,
+                    'status_infak' => $status_infak
+                ];
+                // $data = json_decode(file_get_contents("php://input"));
+                // $data = $this->request->getPost();
+                $model->insert($data);
+                $response = [
+                    'status'   => 201,
+                    'error'    => null,
+                    'messages' => [
+                        'success' => 'Data Saved'
+                    ]
+                ];
+         
+                return $this->respondCreated($response);
+            } catch(\Exception $e){
+                return $this->fail('Invalid token');
+            }
+        
     }
 
-    public function createKeuangan($order_id, $nominal)
+    public function updateInfak($token, $no_keuangan, $ket_infak, $nominal_infak,  $des_infak, $status_infak){
+        $key = getenv('TOKEN_SECRET');
+        $model = new InfakModel();
+        $ada = $model->getWhere(['no_keuangan' => $no_keuangan])->getResult();
+        $data = json_decode($ada, true);
+        $id = $data['id_infak'];
+        $decoded = JWT::decode($token, new Key ($key, 'HS256'));
+        $id_usr = $decoded->id;
+        if ($ada){            
+            $data = [
+                'no_keuangan' => $no_keuangan,
+                'id_user' => $id_usr,
+                'keterangan_infak' => $ket_infak,
+                'nominal_infak' => $nominal_infak,
+                'deskripsi_infak' => $des_infak,
+                'status_infak' => $status_infak
+            ];
+                    
+            // Insert to Database
+            $model->update($id, $data);
+            return $this->createKeuangan($no_keuangan, $ket_infak, $nominal_infak, $des_infak);
+            $response = [
+                'status'   => 200,
+                'error'    => null,
+                'messages' => [
+                'success' => 'Data Updated'
+                ]
+            ];
+            return $this->respond($response);
+        } else {
+            return $this->failNotFound('No Data Found with id '.$id);
+        }
+    }
+
+    public function createKeuangan($no_keuangan, $ket_infak,  $nominal, $des_infak)
     {
         try {
             $model = new KeuanganModel();
             $jmlkasakhir = $this->getSaldo() + $nominal;
-            $model->getNomorKeuangan();
                 $data = [
-                    'no_keuangan' => $order_id,
+                    'no_keuangan' => $no_keuangan,
                     'tipe_keuangan' => "Pemasukan",
                     'tgl_keuangan' => $this->getTime(),
-                    'keterangan_keuangan' => "Infaq bal bala",
+                    'keterangan_keuangan' => "Infaq atas nama ".$ket_infak,
                     'jenis_keuangan' => "Lain-lain",
                     'status_keuangan' => "Selesai",
                     'nominal_keuangan' => $nominal,
                     'jml_kas_awal' => $this->getSaldo(),
                     'jml_kas_akhir' => $jmlkasakhir,
-                    'deskripsi_keuangan' => "",
+                    'deskripsi_keuangan' => $des_infak,
                     'create_at' => $this->getTime(),
                     'update_at' => $this->getTime()
                 ];

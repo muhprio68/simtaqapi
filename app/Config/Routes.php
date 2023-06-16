@@ -50,6 +50,7 @@ $routes->resource('charge');
 $routes->resource('nomor');
 $routes->resource('user');
 $routes->resource('gantipassword');
+$routes->resource('infak');
 $routes->post('notifikasi', 'Notifikasi::index');
 //$routes->resource('me');
 
