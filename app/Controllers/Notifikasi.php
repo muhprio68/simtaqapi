@@ -29,7 +29,7 @@ class Notifikasi extends ResourceController
             $result = json_decode($json_result, true);
             $status_code = $result['status_code'];
             $no_keuangan  = $result['order_id'];
-            $nominal_infak  = $result['gross_amount'];
+            $nominal_infak  = round($result['gross_amount']);
             $ket_infak  = $result['custom_field1'];
             $des_infak  = $result['custom_field2'];
             $token = $result['custom_field3'];
