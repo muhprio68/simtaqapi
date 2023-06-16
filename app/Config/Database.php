@@ -30,12 +30,13 @@ class Database extends Config
      *
      * @var array
      */
+    //coba
     public $default = [
         'DSN'      => '',
         'hostname' => 'localhost',
-        'username' => 'root',
-        'password' => '',
-        'database' => 'restful_db',
+        'username' => 'simtaqmy_muhprio',
+        'password' => 'prio681997',
+        'database' => 'simtaqmy_restapi',
         'DBDriver' => 'MySQLi',
         'DBPrefix' => '',
         'pConnect' => false,
