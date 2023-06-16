@@ -88,7 +88,7 @@ class Notifikasi extends ResourceController
             $decoded = JWT::decode($token, new Key ($key, 'HS256'));
             $idusr = $decoded->id;
         } catch(\Exception $e){
-            return $this->fail('Invalid token 1');
+            return $this->fail('Invalid token 1'.$idusr);
         }
             try {
                 $data = [
