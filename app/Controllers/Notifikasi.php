@@ -121,8 +121,8 @@ class Notifikasi extends ResourceController
         $key = getenv('TOKEN_SECRET');
         $model = new InfakModel();
         $ada = $model->getWhere(['no_keuangan' => $no_keuangan])->getResult();
-        $data = json_decode($ada, true);
-        $id = $data[0]['id_infak'];
+        $data = json_decode($ada[0], true);
+        $id = ['id_infak'];
         $decoded = JWT::decode($token, new Key ($key, 'HS256'));
         $id_usr = $decoded->uid;
         if ($ada){            
