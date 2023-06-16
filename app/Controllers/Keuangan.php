@@ -33,7 +33,8 @@ class Keuangan extends ResourceController
             return $this->fail('Invalid Token');
         }
     }
-
+    
+    //get nilai saldo
     public function getSaldo()
     {
         $saldomodel = new SaldoModel();
@@ -41,6 +42,7 @@ class Keuangan extends ResourceController
         return $datasaldo['jml_saldo'];
     }
 
+    //update saldo
     public function updateSaldo($tipe, $nominal)
     {
         $model = new SaldoModel();
@@ -247,12 +249,15 @@ class Keuangan extends ResourceController
                 if($data){
                     $nominal = $data['nominal_keuangan'];
                     $tipe = $data['tipe_keuangan'];
+                    $jenis = $data['jenis_keuangan'];
                     if ($tipe == "Pemasukan"){
                         $this->updateSaldo("Pengeluaran", $nominal);
                     } else {
                         $this->updateSaldo("Pemasukan", $nominal);
                     }
-                    $this->deleteDonatur($lvlusr, $id);
+                    if ($jenis == "Donatur"){
+                        $this->deleteDonatur($lvlusr, $id);
+                    }
                     $model->delete($id);
                     $response = [
                         'status'   => 200,
@@ -306,13 +311,5 @@ class Keuangan extends ResourceController
     public function getTime(){
         $myTime = Time::now('Asia/Jakarta', 'id_ID');
         return $myTime->toDateString();
-    }
-
-    // public function getTimeCoba($tgl){
-    //     $time = Time::parse($tgl);
-    //     $tahun = $time->getYear();
-    //     $bulan = $time->getMonth();
-    //     return $tahun;
-    // }
-    
+    }    
 }
