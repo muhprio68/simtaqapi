@@ -87,6 +87,10 @@ class Notifikasi extends ResourceController
             $modelkeu->getNomorKeuangan();
             $decoded = JWT::decode($token, new Key ($key, 'HS256'));
             $idusr = $decoded->id;
+        } catch(\Exception $e){
+            return $this->fail('Invalid token 1');
+        }
+            try {
                 $data = [
                     'no_keuangan' => $no_keuangan,
                     'id_user' => $idusr,
@@ -108,7 +112,7 @@ class Notifikasi extends ResourceController
          
                 return $this->respondCreated($response);
             } catch(\Exception $e){
-                return $this->fail('Invalid token');
+                return $this->fail('Invalid token 2');
             }
         
     }
