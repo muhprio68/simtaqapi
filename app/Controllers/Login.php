@@ -6,6 +6,7 @@ use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\API\ResponseTrait;
 use App\Models\UserModel;
 use Firebase\JWT\JWT;
+use PhpParser\Node\Expr\Throw_;
 
 class Login extends ResourceController
 {
@@ -30,15 +31,21 @@ class Login extends ResourceController
         $verify = password_verify($this->request->getVar('password'), $user['password']);
         if(!$verify) return $this->fail('Wrong Password');
  
-        $key = getenv('TOKEN_SECRET');
-        $payload = array(
-            "iat" => 1356999524,
-            "nbf" => 1357000000,
-            "uid" => $user['id'],
-            "nama" => $user['nama'],
-            "email" => $user['email'],
-            "level" => $user['level']
-        );
+        try {
+            $key = getenv('TOKEN_SECRET');
+            $payload = array(
+                "iat" => 1356999524,
+                "nbf" => 1357000000,
+                "uid" => $user['id'],
+                "nama" => $user['nama'],
+                "email" => $user['email'],
+                "level" => $user['level']
+            );
+        } catch(\Throwable $th){
+            return $this->fail('gagal akses env'.$th);
+
+        }
+        
  
         $token = JWT::encode($payload, $key,'HS256');
  
