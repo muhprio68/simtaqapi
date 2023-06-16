@@ -41,7 +41,7 @@ class Notifikasi extends ResourceController
                 return $this->updateInfak($token, $no_keuangan, $ket_infak, $nominal_infak, $des_infak, "Selesai");
             }
         } catch(\Exception $e){
-            return $this->fail('Tidak dapat memasukkan data keuangan');
+            return $this->fail('Tidak dapat memasukkan data keuangan '. $e);
         }
     }
 
