@@ -5,7 +5,7 @@ use CodeIgniter\API\ResponseTrait;
 use App\Models\KeuanganModel;
 use App\Models\SaldoModel;
 use App\Models\DonaturModel;
-use App\Models\InfakModel;
+use App\Models\JariyahModel;
 use CodeIgniter\I18n\Time;
 use Exception;
 use Firebase\JWT\JWT;
@@ -29,16 +29,16 @@ class Notifikasi extends ResourceController
             $result = json_decode($json_result, true);
             $status_code = $result['status_code'];
             $no_keuangan  = $result['order_id'];
-            $nominal_infak  = round($result['gross_amount']);
-            $ket_infak  = $result['custom_field1'];
-            $des_infak  = $result['custom_field2'];
+            $nominal_jariyah  = round($result['gross_amount']);
+            $ket_jariyah  = $result['custom_field1'];
+            $des_jariyah  = $result['custom_field2'];
             $token = $result['custom_field3'];
             
     
             if ($status_code == 201){
-                return $this->createInfak($token, $no_keuangan, $ket_infak, $nominal_infak, $des_infak, "Tunda");
+                return $this->createjariyah($token, $no_keuangan, $ket_jariyah, $nominal_jariyah, $des_jariyah, "Tunda");
             } else if ($status_code == 200){
-                return $this->updateInfak($token, $no_keuangan, $ket_infak, $nominal_infak, $des_infak, "Selesai");
+                return $this->updatejariyah($token, $no_keuangan, $ket_jariyah, $nominal_jariyah, $des_jariyah, "Selesai");
             }
         } catch(\Exception $e){
             return $this->fail('Tidak dapat memasukkan data keuangan '. $e);
@@ -78,11 +78,11 @@ class Notifikasi extends ResourceController
         return $this->respond($response);
     }
 
-    public function createInfak($token, $no_keuangan, $ket_infak, $nominal_infak,  $des_infak, $status_infak)
+    public function createJariyah($token, $no_keuangan, $ket_jariyah, $nominal_jariyah,  $des_jariyah, $status_jariyah)
     {
         try {
             $key = getenv('TOKEN_SECRET');
-            $model = new InfakModel();
+            $model = new JariyahModel();
             $modelkeu = new KeuanganModel();
             $modelkeu->getNomorKeuangan();
             $decoded = JWT::decode($token, new Key ($key, 'HS256'));
@@ -91,10 +91,10 @@ class Notifikasi extends ResourceController
                 $data = [
                     'no_keuangan' => $no_keuangan,
                     'id_user' => $idusr,
-                    'keterangan_infak' => $ket_infak,
-                    'nominal_infak' => $nominal_infak,
-                    'deskripsi_infak' => $des_infak,
-                    'status_infak' => $status_infak
+                    'keterangan_jariyah' => $ket_jariyah,
+                    'nominal_jariyah' => $nominal_jariyah,
+                    'deskripsi_jariyah' => $des_jariyah,
+                    'status_jariyah' => $status_jariyah
                 ];
                 // $data = json_decode(file_get_contents("php://input"));
                 // $data = $this->request->getPost();
@@ -114,26 +114,26 @@ class Notifikasi extends ResourceController
         
     }
 
-    public function updateInfak($token, $no_keuangan, $ket_infak, $nominal_infak,  $des_infak, $status_infak){
+    public function updatejariyah($token, $no_keuangan, $ket_jariyah, $nominal_jariyah,  $des_jariyah, $status_jariyah){
         $key = getenv('TOKEN_SECRET');
-        $model = new InfakModel();
+        $model = new JariyahModel();
         $ada = $model->where('no_keuangan', $no_keuangan)->first();
-        $id = $ada['id_infak'];
+        $id = $ada['id_jariyah'];
         $decoded = JWT::decode($token, new Key ($key, 'HS256'));
         $id_usr = $decoded->uid;
         if ($ada){            
             $data = [
                 'no_keuangan' => $no_keuangan,
                 'id_user' => $id_usr,
-                'keterangan_infak' => $ket_infak,
-                'nominal_infak' => $nominal_infak,
-                'deskripsi_infak' => $des_infak,
-                'status_infak' => $status_infak
+                'keterangan_jariyah' => $ket_jariyah,
+                'nominal_jariyah' => $nominal_jariyah,
+                'deskripsi_jariyah' => $des_jariyah,
+                'status_jariyah' => $status_jariyah
             ];
                     
             // Insert to Database
             $model->update($id, $data);
-            return $this->createKeuangan($no_keuangan, $ket_infak, $nominal_infak, $des_infak);
+            return $this->createKeuangan($no_keuangan, $ket_jariyah, $nominal_jariyah, $des_jariyah);
             $response = [
                 'status'   => 200,
                 'error'    => null,
@@ -147,7 +147,7 @@ class Notifikasi extends ResourceController
         }
     }
 
-    public function createKeuangan($no_keuangan, $ket_infak,  $nominal, $des_infak)
+    public function createKeuangan($no_keuangan, $ket_jariyah,  $nominal, $des_jariyah)
     {
         try {
             $model = new KeuanganModel();
@@ -156,13 +156,13 @@ class Notifikasi extends ResourceController
                     'no_keuangan' => $no_keuangan,
                     'tipe_keuangan' => "Pemasukan",
                     'tgl_keuangan' => $this->getTime(),
-                    'keterangan_keuangan' => "Infaq atas nama ".$ket_infak,
+                    'keterangan_keuangan' => "Jariyah atas nama ".$ket_jariyah,
                     'jenis_keuangan' => "Lain-lain",
                     'status_keuangan' => "Selesai",
                     'nominal_keuangan' => $nominal,
                     'jml_kas_awal' => $this->getSaldo(),
                     'jml_kas_akhir' => $jmlkasakhir,
-                    'deskripsi_keuangan' => $des_infak,
+                    'deskripsi_keuangan' => $des_jariyah,
                     'create_at' => $this->getTime(),
                     'update_at' => $this->getTime()
                 ];
