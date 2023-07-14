@@ -82,8 +82,6 @@ class Kegiatan extends ResourceController
                     'create_at' => $this->getTime(),
                     'update_at' => $this->getTime()
                 ];
-                //$data = json_decode(file_get_contents("php://input"));
-                //$data = $this->request->getPost();
                 $model->insert($data);
                 $response = [
                     'status'   => 201,
@@ -202,5 +200,4 @@ class Kegiatan extends ResourceController
         $myTime = Time::now('Asia/Jakarta', 'id_ID');
         return $myTime->toDateString();
     }
- 
 }

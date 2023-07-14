@@ -1,7 +1,6 @@
 <?php
 namespace App\Controllers;
 use CodeIgniter\RESTful\ResourceController;
-use CodeIgniter\API\ResponseTrait;
 
 class Charge extends ResourceController
 {
@@ -21,8 +20,7 @@ class Charge extends ResourceController
         $custom1 = $data['custom_field1'];
         $custom2 = $data['custom_field2'];
         $custom3 = $data['custom_field3'];
-
-        $json = $this->request->getJSON();
+        
         $params = [
             'transaction_details' => array(
                 'order_id' => $trans_detail['order_id'],
@@ -40,9 +38,6 @@ class Charge extends ResourceController
             'redirect_url' => 'https://app.sandbox.midtrans.com/snap/v2/vtweb/'.$snapToken
         ];
         
-         
         return $this->respondCreated($data);
     }
-
-    
 }
