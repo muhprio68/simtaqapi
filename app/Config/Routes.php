@@ -49,7 +49,7 @@ $routes->resource('saldo');
 $routes->resource('charge');
 $routes->resource('nomor');
 $routes->resource('user');
-$routes->post('gantipassword', 'GantiPassword');
+$routes->put('gantipassword', 'GantiPassword');
 $routes->post('notifikasi', 'Notifikasi::index');
 //$routes->resource('me');
 
